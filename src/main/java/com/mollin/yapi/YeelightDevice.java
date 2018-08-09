@@ -12,6 +12,7 @@ import com.mollin.yapi.result.YeelightResultOk;
 import com.mollin.yapi.exception.YeelightSocketException;
 import com.mollin.yapi.socket.YeelightSocketHolder;
 
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -52,6 +53,19 @@ public class YeelightDevice {
     }
 
     /**
+     * Constructor for Yeelight device
+     * @param socket Socket connected to a Yeelight device
+     * @param effect Device effect setting for commands
+     * @param duration Device effect duration setting for commands
+     * @throws YeelightSocketException when a socket error occurs
+     */
+    public YeelightDevice(Socket socket, YeelightEffect effect, int duration) throws YeelightSocketException {
+        this.socketHolder = new YeelightSocketHolder(socket);
+        this.setEffect(effect);
+        this.setDuration(duration);
+    }
+
+    /**
      * Constructor for Yeelight device. Initial effect set to 'sudden'
      * @param ip Yeelight device IP
      * @param port Yeelight device port
@@ -68,6 +82,15 @@ public class YeelightDevice {
      */
     public YeelightDevice(String ip) throws YeelightSocketException {
         this(ip, 55443);
+    }
+
+    /**
+     * Constructor for Yeelight device. Reuse existing socket and set initial effect to 'sudden'
+     * @param socket Socket connected to a Yeelight device
+     * @throws YeelightSocketException when a socket error occurs
+     */
+    public YeelightDevice(Socket socket) throws YeelightSocketException {
+        this(socket, YeelightEffect.SUDDEN, 0);
     }
 
     /**
@@ -138,6 +161,17 @@ public class YeelightDevice {
             propertyToValueMap.put(expectedProperties[i], result[i]);
         }
         return propertyToValueMap;
+    }
+
+    /**
+     * Retrieve single property of device
+     * @param property Required property
+     * @return Value of required property
+     * @throws YeelightResultErrorException when command result is an error
+     * @throws YeelightSocketException when socket error occurs
+     */
+    public String getProperty(YeelightProperty property) throws YeelightResultErrorException, YeelightSocketException {
+        return getProperties(property).get(property);
     }
 
     /**

@@ -52,6 +52,22 @@ public class YeelightSocketHolder {
     }
 
     /**
+     * Constructor for socket holder
+     * @param socket Socket connected to a Yeelight device
+     * @throws YeelightSocketException when socket error occurs
+     */
+    public YeelightSocketHolder(Socket socket) throws YeelightSocketException {
+        if(socket.isConnected()) {
+            this.ip = socket.getInetAddress().getHostAddress();
+            this.port = socket.getPort();
+            this.socket = socket;
+            this.initStreams();
+        } else {
+            throw new YeelightSocketException(new IllegalArgumentException("Socket must be connected"));
+        }
+    }
+
+    /**
      * Create socket and associated streams (reader + writer)
      * @throws YeelightSocketException when socket error occurs
      */
@@ -61,6 +77,19 @@ public class YeelightSocketHolder {
             this.socket = new Socket();
             this.socket.connect(inetSocketAddress, YeelightSocketHolder.SOCKET_TIMEOUT);
             this.socket.setSoTimeout(SOCKET_TIMEOUT);
+            this.socketReader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            this.socketWriter = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
+        } catch (Exception e) {
+            throw new YeelightSocketException(e);
+        }
+    }
+
+    /**
+     * Create associated streams (reader + writer)
+     * @throws YeelightSocketException when socket error occurs
+     */
+    private void initStreams() throws YeelightSocketException {
+        try {
             this.socketReader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             this.socketWriter = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
         } catch (Exception e) {
