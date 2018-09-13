@@ -37,6 +37,10 @@ public class YeelightDevice {
      * Device effect duration setting for commands
      */
     private int duration;
+    /**
+     * Additional information about a Yeelight device
+     */
+    private Optional<YeelightDeviceMeta> meta;
 
     /**
      * Constructor for Yeelight device
@@ -91,6 +95,16 @@ public class YeelightDevice {
      */
     public YeelightDevice(Socket socket) throws YeelightSocketException {
         this(socket, YeelightEffect.SUDDEN, 0);
+    }
+
+    /**
+     * Constructor for Yeelight device.
+     * @param meta Description of this Yeelight device
+     * @throws YeelightSocketException when a socket error occurs
+     */
+    public YeelightDevice(YeelightDeviceMeta meta) throws YeelightSocketException {
+        this(meta.ip, meta.port);
+        this.meta = Optional.of(meta);
     }
 
     /**
@@ -343,5 +357,10 @@ public class YeelightDevice {
         }
         YeelightCommand command = new YeelightCommand("set_name", name);
         this.sendCommand(command);
+    }
+
+    public YeelightDeviceMeta getMeta() {
+        final YeelightDeviceMeta none = new YeelightDeviceMeta();
+        return meta.orElse(none);
     }
 }
