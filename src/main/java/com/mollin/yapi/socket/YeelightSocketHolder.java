@@ -67,6 +67,11 @@ public class YeelightSocketHolder {
         }
     }
 
+    public void tryRecover() throws YeelightSocketException {
+        Logger.debug("Socket recovery attempted");
+        initSocketAndStreams();
+    }
+
     /**
      * Create socket and associated streams (reader + writer)
      * @throws YeelightSocketException when socket error occurs

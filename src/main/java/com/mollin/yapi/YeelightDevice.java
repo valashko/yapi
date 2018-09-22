@@ -363,4 +363,12 @@ public class YeelightDevice {
         final YeelightDeviceMeta none = new YeelightDeviceMeta();
         return meta.orElse(none);
     }
+
+    /**
+     * Try reconnect the socket. Useful for situations when the Yeelight device has closed connection.
+     * @throws YeelightSocketException if recovery fails
+     */
+    public void tryRecoverSocket() throws YeelightSocketException {
+        socketHolder.tryRecover();
+    }
 }
